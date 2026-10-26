@@ -17,10 +17,10 @@
 
 | | Membre 1 | Membre 2 |
 |---|---|---|
-| Nom | | |
-| Prénom | | |
-| Adresse courriel | | |
-| Groupe / Section | | |
+| Nom | Hbibou|Essammouni |
+| Prénom | Aya| Khaoula |
+| Adresse courriel | hbibouaya36@gmail.com |khaoulaessammouni04@gmail.com |
+| Groupe / Section | G3 | G3 |
 
 ---
 
@@ -28,10 +28,10 @@
 
 *Reportez le numéro et l'intitulé exact du projet tel qu'il apparaît dans la liste des 40 projets (`projets-agents-ia.md`).*
 
-- **Numéro du projet** :
-- **Intitulé du projet** :
-- **Type** : ☐ Informatique (1 à 20)  ☐ Industriel (21 à 40)
-- **Catégorie** (ex. : Sécurité, Génie logiciel, Maintenance industrielle) :
+- **Numéro du projet** : 21
+- **Intitulé du projet** : Agent de maintenance predictive 
+- **Type** : ☐ Informatique (1 à 20)  [x] Industriel (21 à 40)
+- **Catégorie** (ex. : Sécurité, Génie logiciel, Maintenance industrielle) :Maintenance industrielle
 
 ---
 
@@ -41,18 +41,19 @@
 
 **Problème à résoudre**
 
-_(à compléter)_
+Dans l'industrie, une panne imprévue peut entraîner l'arrêt d'une machine, des retards de production et des coûts de réparation importants.
+
 
 **Utilisateurs cibles**
 
-_(à compléter)_
+Les ouvriers, les techniciens et les ingenieurs
 
 **Fonctionnalités principales de l'agent**
 
-1.
-2.
-3.
-4.
+1. Analyser les données de fonctionnement d'une machine 
+2. Identifier les situations présentant un risque de panne 
+3. Proposer des recommandations de maintenance
+4. Générer un ordre de travail
 
 **Périmètre retenu pour le cours**
 
