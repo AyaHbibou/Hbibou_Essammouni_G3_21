@@ -22,10 +22,10 @@ Le pipeline des tâches (livrable 4) est consolidé par un seul membre, mais **c
 
 | Livrable | Rédacteur | Relecteur | Fichier dans le dépôt |
 | --- | --- | --- | --- |
-| 1. Descriptif du projet | \[à compléter\] | \[à compléter\] | `docs/semaine1/1-descriptif.md` |
-| 2. Dataset | \[à compléter\] | \[à compléter\] | `docs/semaine1/2-dataset.md` + `data/sample/` |
-| 3. Maquette globale | \[à compléter\] | \[à compléter\] | `docs/semaine1/3-maquette.md` + `docs/semaine1/img/` |
-| 4. Pipeline des tâches | \[à compléter\] | \[à compléter\] | `docs/semaine1/4-pipeline.md` |
+| 1. Descriptif du projet | Aya Hbibou | Khaoula Essammouni | `docs/semaine1/1-descriptif.md` |
+| 2. Dataset | Khaoula Essammouni | Aya Hbibou | `docs/semaine1/2-dataset.md` + `data/sample/` |
+| 3. Maquette globale | Aya Hbibou | Khaoula Essammouni | `docs/semaine1/3-maquette.md` + `docs/semaine1/img/` |
+| 4. Pipeline des tâches | Khaoula Essammouni | Aya Hbibou | `docs/semaine1/4-pipeline.md` |
 
 **Circuit GitHub**
 
@@ -37,56 +37,70 @@ Le pipeline des tâches (livrable 4) est consolidé par un seul membre, mais **c
 
 Remplacez chaque `[à compléter]` par vos réponses. Les exemples en italique viennent du projet n° 1 du catalogue (agent de recherche documentaire) ; supprimez-les dans votre version. Le dossier rempli tient sur 4 à 6 pages, maquettes comprises.
 
-## Livrable 1 : descriptif du projet mis à jour
+# Livrable 1 : descriptif du projet mis à jour
 
-Rédacteur : \[à compléter\]   Relecteur : \[à compléter\]   Fichier : `docs/semaine1/1-descriptif.md`
+**Rédacteur :** Aya Hbibou   **Relecteur :** Khaoula Essammouni  **Fichier :** docs/semaine1/1-descriptif.md
 
-Le descriptif adapte la fiche du catalogue à votre version du projet. Il doit pouvoir être lu seul par quelqu'un qui ne connaît pas le catalogue.
+## 1.1 Contexte et problème
 
-**1.1 Contexte et problème** (5 lignes au plus) : quel problème métier, pour qui, comment on fait aujourd'hui sans l'agent. \[à compléter\]
+Les pannes non planifiées de pompes et de moteurs électriques causent des arrêts de production, des coûts élevés et des risques de sécurité. Les équipes de maintenance et leurs techniciens travaillent aujourd'hui en maintenance corrective (réparation après la panne) ou préventive à intervalles fixes. Ces deux approches sont coûteuses : la première subit les arrêts, la seconde remplace des pièces encore saines. Il manque un outil qui détecte la dégradation d'un roulement à l'avance et déclenche l'intervention au bon moment.
 
-**1.2 Objectif** en une phrase : \[à compléter\]
+## 1.2 Objectif en une phrase
 
-**1.3 Utilisateurs cibles et scénario d'usage principal** : qui utilise l'agent et ce qu'il fait, étape par étape. \[à compléter\]
+Détecter les dérives des capteurs d'un équipement tournant, estimer sa durée de vie restante (RUL) avec une incertitude, puis proposer au technicien un ordre de travail planifié qu'il valide.
 
-**1.4 Fonctionnalités du MVP** (2 à 3 pour un binôme, 3 à 4 pour un trinôme, 4 à 5 pour une équipe de 4)
+## 1.3 Utilisateurs cibles et scénario d'usage principal
+
+**Utilisateurs :** le technicien de maintenance (il décide) et le responsable maintenance (il suit l'état du parc d'équipements).
+
+**Scénario :**
+1. L'agent reçoit en continu les mesures des capteurs (vibration, température, courant) de plusieurs équipements simulés.
+2. Il nettoie les séries temporelles et les compare au profil normal appris.
+3. Lorsqu'une dérive apparaît, il l'affiche avec un niveau de confiance.
+4. Il estime la RUL de l'équipement, avec son incertitude, et explique son diagnostic.
+5. Il propose une fenêtre d'intervention selon la RUL, la criticité et le planning de production.
+6. Il prépare l'ordre de travail dans la GMAO simulée, avec les pièces et la procédure.
+7. Le technicien valide ou refuse l'ordre de travail ; la décision est journalisée.
+
+## 1.4 Fonctionnalités du MVP (binôme : 2 à 3)
 
 | N° | Fonctionnalité | Ce que l'utilisateur voit ou obtient | Priorité (indispensable, souhaitable) |
-| --- | --- | --- | --- |
-| F1 | \[à compléter\] | \[à compléter\] |  |
-| F2 | \[à compléter\] | \[à compléter\] |  |
-| F3 |  |  |  |
-| F4 |  |  |  |
-| F5 |  |  |  |
+|----|----------------|--------------------------------------|---------------------------------------|
+| F1 | Détection des dérives et estimation de la RUL | Pour chaque équipement : un score de dérive, une RUL avec intervalle d'incertitude, et une explication du diagnostic (SHAP, avec texte rédigé par le LLM s'il est retenu) | Indispensable |
+| F2 | Planification et ordre de travail | Une fenêtre d'intervention proposée selon la RUL, la criticité et le planning, puis un ordre de travail dans la GMAO simulée avec pièces et procédure issues des fiches de maintenance  | Indispensable |
+| F3 | Tableau de bord et validation par le technicien | Courbes des capteurs, alertes, RUL et fenêtre proposée ; boutons pour valider ou refuser l'ordre de travail, avec historique des décisions | Indispensable |
 
-**1.5 Services et composants techniques**
+
+## 1.5 Services et composants techniques
 
 | Service ou composant | Rôle dans le projet | Technologie choisie | Pourquoi ce choix |
-| --- | --- | --- | --- |
-| Modèle (LLM ou ML) |  |  |  |
-| Recherche ou mémoire (RAG, base vectorielle, SGBD) |  |  |  |
-| Outils appelés par l'agent |  |  |  |
-| API |  | FastAPI |  |
-| Interface |  |  |  |
-| Conteneur et intégration continue |  | Docker, GitHub Actions |  |
+|----------------------|---------------------|---------------------|-------------------|
+| Modèle (LLM ou ML) | Détection des dérives, estimation de la RUL, rédaction optionnelle du diagnostic | Isolation Forest (ou autoencodeur) ; Random Forest ; LLM optionnel | Modèles simples et explicables avec SHAP ; le LLM ne fait que rédiger, jamais décider |
+| Recherche ou mémoire (RAG, base vectorielle, SGBD) | GMAO simulée (équipements, pièces, ordres de travail) et recherche dans les fiches de maintenance | SQLite ; mini-RAG avec index vectoriel (FAISS ou Chroma, à confirmer) | SQLite suffit pour une GMAO simulée ; le RAG fournit pièces et procédure avec sources citées |
+| Outils appelés par l'agent | Détection de dérives, estimation de la RUL, planification, création de l'ordre de travail | Orchestrateur Python enchaînant les modules | Chaîne simple et testable, module par module |
+| API | Exposer mesures, dérives, RUL, planification et ordres de travail | FastAPI | Validation Pydantic et documentation Swagger automatiques |
+| Interface | Tableau de bord et validation humaine | Streamlit | Interface de démonstration rapide en Python |
+| Conteneur et intégration continue | Environnement reproductible, tests et construction automatisés | Docker , GitHub Actions | Même environnement pour les deux membres du binôme et vérification à chaque push |
+| Suivi des données et des expériences | Reproductibilité des jeux de données et comparaison des essais | DVC, MLflow | Versionner C-MAPSS, CWRU, FEMTO et retrouver le meilleur modèle |
 
-**1.6 Hors périmètre** (ce que vous ne ferez pas) : \[à compléter\]
+## 1.6 Hors périmètre
 
-**1.7 Écart avec la fiche du catalogue** : ce que vous ajoutez, retirez ou modifiez, et pourquoi. \[à compléter ou « aucun »\]
+- Machines et GMAO réelles (données de bancs d'essai ou simulées uniquement).
+- Défauts multiples simultanés : un seul type de dégradation par équipement.
+- Optimisation globale du planning de production.
+- Pompes et moteurs électriques réels (extension possible).
 
-*Exemple : les ingénieurs d'un bureau d'études cherchent à la main dans 40 normes internes en PDF. Objectif : obtenir en moins de 10 secondes une réponse citée. F1 ingestion et recherche, F2 réponse avec citations, F3 interface Streamlit. Hors périmètre : documents scannés, gestion des droits.*
+## 1.7 Écart avec la fiche du catalogue
 
-**Critères d'acceptation (vérifiés par le relecteur)**
+- **Ajouts :** estimation de la RUL avec incertitude communiquée ; validation obligatoire du technicien pour chaque ordre de travail ; mini-RAG sur des fiches de maintenance pour les pièces et la procédure ; explication et niveau de confiance pour chaque alerte.
+- **Modifications :** capteurs IoT et GMAO réels remplacés par des versions simulées, faute d'accès à du matériel industriel ; données issues de jeux publics (C-MAPSS pour la RUL, CWRU et FEMTO pour la vibration), avec le courant simulé.
+- **Retraits :** aucun.
+- **Pourquoi :** rester réalisable en binôme, avec des données publiques, tout en gardant une chaîne complète de la mesure à l'ordre de travail validé.
 
-- [ ] Le problème et l'utilisateur sont compréhensibles sans le catalogue.
-- [ ] Le nombre de fonctionnalités correspond à la taille de l'équipe.
-- [ ] Chaque fonctionnalité est démontrable (pas de formulation vague comme « améliorer »).
-- [ ] Chaque composant technique a une justification d'une ligne.
-- [ ] Le hors périmètre est rempli.
 
 ## Livrable 2 : dataset
 
-Rédacteur : \[à compléter\]   Relecteur : \[à compléter\]   Fichiers : `docs/semaine1/2-dataset.md` + `data/sample/`
+Rédacteur : Khaoula Essammouni   Relecteur : Aya Hbibou   Fichiers : `docs/semaine1/2-dataset.md` + `data/sample/`
 
 Sans données utilisables dès la semaine 1, le projet ne peut pas tenir en 4 semaines. **Un échantillon réel doit déjà être dans le dépôt** (quelques fichiers ou une centaine de lignes, moins de 10 Mo). Les données complètes volumineuses ne vont pas dans Git : indiquez où elles se trouvent.
 
