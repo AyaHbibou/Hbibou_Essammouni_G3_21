@@ -52,8 +52,8 @@
 ## Critères d'acceptation (à vérifier par le récepteur)
 
 - [ ] L'échantillon est dans `data/sample/` et s'ouvre sans erreur.
-- [ ] La licence autorise l'utilisation dans un projet de cours.
-- [ ] Aucune donnée personnelle.
-- [ ] Chaque fonctionnalité du MVP est couverte par la justification.
-- [ ] L'alternative de réponse est accessible (liens vérifiés).
-- [ ] Le jeu de test est défini.
+- [x] La licence autorise l'utilisation dans un projet de cours.
+- [x] Aucune donnée personnelle.
+- [x] Chaque fonctionnalité du MVP est couverte par la justification.
+- [x] L'alternative de réponse est accessible (liens vérifiés).
+- [x] Le jeu de test est défini.
