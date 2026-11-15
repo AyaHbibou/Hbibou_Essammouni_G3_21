@@ -54,3 +54,24 @@ flowchart TD
 | Docker Compose et GitHub Actions | Environnement reproductible, tests et construction automatisés | Support de F1 à F3 |
 
 ## 3.3 Maquette des écrans
+
+| Écran | Image (img/...) | Fonctionnalités affichées | Action principale de l'utilisateur |
+|-------|-----------------|---------------------------|-------------------------------------|
+| A. Vue d'ensemble du parc | img/ecran-a-parc.png | F1 (état et alertes), F3 | Choisir un équipement en alerte |
+| B. Détail d'un équipement | img/ecran-b-detail.png | F1 (courbes, dérive, RUL, explication) | Demander la planification de l'intervention |
+| C. Proposition d'ordre de travail | img/ecran-c-ordre-travail.png | F2 (fenêtre, pièces, procédure), F3 | Valider ou refuser l'ordre de travail |
+
+
+**Contenu de chaque écran**
+
+- **A. Vue d'ensemble :** tableau des équipements simulés avec nom, criticité, état (normal, dérive détectée, alerte), RUL estimée et dernière mise à jour ; filtre par état.
+- **B. Détail :** courbes de vibration, température et courant ; score de dérive dans le temps ; RUL avec intervalle d'incertitude et niveau de confiance ; graphique SHAP des capteurs qui expliquent le diagnostic, avec le texte du LLM s'il est retenu ; bouton « Planifier l'intervention ».
+- **C. Ordre de travail :** fenêtre d'intervention proposée et le planning de production concerné ; liste des pièces et procédure avec la fiche de maintenance citée ; boutons « Valider » et « Refuser » avec un champ de commentaire.
+
+## 3.4 Parcours utilisateur
+
+Scénario principal du livrable 1 :
+
+1. **Écran A :** le technicien ouvre le tableau de bord et repère un équipement en alerte, puis clique dessus.
+2. **Écran B :** il consulte les courbes, la RUL avec son incertitude et l'explication du diagnostic, puis clique sur « Planifier l'intervention ».
+3. **Écran C :** il examine la fenêtre d'intervention, les pièces et la procédure, puis valide ou refuse l'ordre de travail.
