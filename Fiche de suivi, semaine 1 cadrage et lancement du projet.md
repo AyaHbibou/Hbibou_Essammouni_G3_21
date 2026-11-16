@@ -76,10 +76,10 @@ Règle du cours : uniquement des données publiques, fictives ou anonymisées.
 
 | Question | Votre réponse |
 | --- | --- |
-| Origine des données (source, licence) |  |
-| Volume disponible aujourd'hui |  |
-| Format |  |
-| Données personnelles : non, ou oui avec la méthode d'anonymisation |  |
+| Origine des données (source, licence) |NASA C-MAPSS (Turbofan Engine Degradation Simulation), sous-ensemble FD001. Copie utilisée : https://huggingface.co/datasets/SoyVitou/NASA-C-MAPSS-Turbofan-Engine (configuration FD001). Dépôt d'origine : https://www.nasa.gov/content/prognostics-center-of-excellence-data-set-repository  |
+| Volume disponible aujourd'hui |1fichier parquet  environ 0.5MO  |
+| Format |parquet  |
+| Données personnelles : non, ou oui avec la méthode d'anonymisation | aucune |
 | Jeu d'essai versionné dans le dépôt : chemin du fichier ou du script |  |
 
 ### Description du jeu de données
