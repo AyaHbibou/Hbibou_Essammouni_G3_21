@@ -1,18 +1,6 @@
 # Fiche de suivi, semaine 1 : cadrage et lancement du projet
 
-Nov 16, 2026 · @Larhlimi
 
-## Mode d'emploi
-
-Cette fiche fixe votre projet et prouve que le groupe a démarré : elle compte pour 5 points sur 100. Les fiches des semaines 2 et 3 comptent chacune pour 10 points.
-
-- Une seule fiche par groupe, remplie ensemble et relue par chaque membre.
-- Dépôt de la fiche : `docs/suivi/fiche-semaine-1.md` dans le dépôt GitHub du groupe (push S1-6 de la liste des push).
-- Date limite : fin de la semaine 1 du projet, à la date annoncée en séance.
-- Réponses courtes et vérifiables : un chiffre, un lien ou un nom de fichier valent mieux qu'une phrase générale.
-- Si un point n'est pas encore tranché, écrivez « à décider » et la date de décision, plutôt que de laisser la case vide.
-
-Rappel du barème du projet, sur 100 : application finale 20, dépôt GitHub 20, fiches hebdomadaires 25 (5 + 10 + 10), soutenance 20, compte rendu 15.
 
 ## 1. Identification du groupe
 
@@ -38,7 +26,7 @@ Membres du groupe (2 à 4 lignes) :
 
 | Question | Votre réponse |
 | --- | --- |
-| Besoin en une phrase |détecter les dérives des capteurs et estimer la durée de vie restante et puis proposer un ordre de travail  à valider  |
+| Besoin en une phrase |  un agent de maintenance prédictive : il reçoit en continu des mesures de capteurs (IoT simulé), compare le comportement actuel à un profil normal appris, détecte les dérives progressives, estime la durée de vie restante (RUL) et propose une fenêtre d’intervention compatible avec le planning de production.  |
 | Utilisateur final : qui se sert de l'application | Technicien|
 | Ce que fait l'application, vu par l'utilisateur (3 lignes au plus) |l'agent reçoit les mesures des capteurs,nettoie les séries temporelles et compare avec au profil normal , estimation du temps de vie restant avec explication du diagnostic et préparation du l'ordre de travail dont  le technicien de maintenance le  valide ou  le refuse   |
 | Approche retenue (règles, apprentissage, RAG, agent) et raison du choix | agent, pour rédiger  des diagnostic qui aide à la prise de décision  |
@@ -62,13 +50,40 @@ La version minimale est le parcours complet le plus simple, de la demande de l'u
 | Composant | Choix prévu | Dossier ou fichier dans le dépôt |
 | --- | --- | --- |
 | Cœur : modèle, agent ou chaîne RAG | agent  |
-| API | FastAPI (Pydantic, Swagger) : `/health`, `/orders`, `/validate`, `/predict` ; clé d'API | à compléter |
+| API | FastAPI (Pydantic, Swagger) : `/health`, `/orders`, `/validate`, `/predict` ; clé d'API |  |
 | Interface | Streamlit |  |
-| Données et stockage | C-MAPSS FD001 (Parquet), GMAO simulée SQLite, versionnement DVC, suivi MLflow | `data/sample/`, `src/agent/load_data.py`, `data.py`  |
+| Données et stockage | C-MAPSS FD001 (Parquet), GMAO simulée SQLite, versionnement DVC, suivi MLflow |   |
 | Tests | pytest ; CI GitHub Actions à chaque push |  |
-| Services externes et clés nécessaires | Hugging Face pour télécharger les données . Clé d'API de l'application. | `.env.example` |
+| Services externes et clés nécessaires | Hugging Face pour télécharger les données . Clé d'API de l'application. | |
 
-Joignez un schéma d'architecture au dépôt (`docs/architecture.png`, ou un diagramme Mermaid dans le README) et indiquez son lien ici :
+Schéma d'architecture
+
+```mermaid
+flowchart TD
+    U["Technicien"] -->|"1. consulte, valide ou refuse"| UI["Streamlit : tableau de bord"]
+    UI -->|"2. requête REST"| API["FastAPI : contrôle d'accès et journalisation"]
+    API -->|"3. lance l'analyse"| ORC["Orchestrateur Python"]
+
+    S["Capteurs simulés : vibration, température, courant"] -->|"mesures"| ING
+    ORC --> ING["Ingestion et nettoyage"]
+    ING --> DER["Détection de dérives : Isolation Forest"]
+    DER --> RUL["Estimation de la RUL : Random Forest + SHAP"]
+    RUL --> PLAN["Planification : règles RUL, criticité, planning"]
+    PLAN --> OT["Création de l'ordre de travail"]
+
+    RAG["Mini-RAG : fiches de maintenance"] -->|"pièces et procédure"| OT
+    RUL -.->|"optionnel"| LLM["LLM : rédaction du diagnostic"]
+    LLM -.-> OT
+
+    OT --> DB[("SQLite : GMAO simulée")]
+    DB -->|"4. ordre de travail proposé"| API
+    API -->|"5. réponse"| UI
+    UI -->|"6. décision du technicien"| API
+    API -->|"journal des décisions"| DB
+
+    ML["MLflow et DVC : modèles et données"] -.-> DER
+    ML -.-> RUL
+```
 
 ## 5. Données
 
@@ -84,7 +99,9 @@ Règle du cours : uniquement des données publiques, fictives ou anonymisées.
 
 ### Description du jeu de données
 
-Décrivez le jeu de données tel qu'il est aujourd'hui, chiffres à l'appui. Chaque chiffre doit pouvoir être recalculé par un script du dépôt. Si votre projet n'utilise pas de tableau de données (agent, questions sur des documents), décrivez de la même façon votre corpus de documents ou votre jeu de cas d'évaluation.
+Le projet repose sur un tableau de données : le sous-ensemble FD001 de NASA C-MAPSS, copie Hugging Face (cmapss_fd001_train.parquet, environ 0,5 Mo). Il décrit la dégradation de moteurs d’avion simulés. Le jeu compte 20 631 lignes et 29 colonnes. Une ligne correspond à un cycle de vol d’un moteur. Les données portent sur 100 moteurs suivis jusqu’à la panne, avec une durée de vie de 128 à 362 cycles.
+
+Chaque ligne contient l’identifiant du moteur (unit_id), le numéro de cycle (cycle), 3 réglages, 21 capteurs et la cible RUL, le nombre de cycles restants avant la panne. Deux colonnes de service s’y ajoutent, dataset et split. Le jeu ne présente aucune valeur manquante (0 sur 20 631 lignes). Sept colonnes sont constantes (setting_3, T2, P2, epr, farB, Nf_dmd, PCNfR_dmd) et sont retirées au nettoyage, ce qui laisse 22 colonnes. Les valeurs extrêmes sont conservées, car elles font partie de la dégradation simulée. Les données sont simulées et ne contiennent aucune donnée personnelle.
 
 Vue d'ensemble :
 | Caractéristique | Votre réponse |
@@ -104,12 +121,12 @@ Dictionnaire des variables (extrait) :
  
 | Variable | Type | Signification | Exemple de valeur | Valeurs manquantes (%) |
 | --- | --- | --- | --- | --- |
-| `unit_id` | nombre (identifiant) | Numéro du moteur | à reporter depuis `data/sample/` | 0 |
-| `cycle` | nombre | Numéro du cycle de vol | à reporter | 0 |
-| `setting_1`, `setting_2` | nombre | Réglages opérationnels (`setting_3` est constant, retiré) | à reporter | 0 |
-| `T24`, `T30`, `T50`, `P30`, `Nf`, `Nc`, `Ps30`, `phi`, `BPR`, `htBleed`, `W31`, `W32`, etc. | nombre | Mesures de capteurs (températures, pressions, vitesses, débits) | à reporter | 0 |
-| `RUL` | nombre | Cycles restants avant la panne (cible) | à reporter | 0 |
- 
+| `unit_id` | nombre (identifiant) | Numéro du moteur |  | 0 |
+| `cycle` | nombre | Numéro du cycle de vol |  |  0|
+| `setting_1`, `setting_2` | nombre | Réglages opérationnels (`setting_3` est constant, retiré) |  | 0 |
+| `T24`, `T30`, `T50`, `P30`, `Nf`, `Nc`, `Ps30`, `phi`, `BPR`, `htBleed`, `W31`, `W32`, etc. | nombre | Mesures de capteurs (températures, pressions, vitesses, débits) | |  0|
+| `RUL` | nombre | Cycles restants avant la panne (cible) |  | 0 |
+
 Trois exemples tirés du jeu de données (jeu de test : chaque moteur coupé à 3 moments de sa vie) :
  
 | Exemple (entrée) | Réponse ou étiquette attendue | Nature de l'exemple |
@@ -122,7 +139,7 @@ Trois exemples tirés du jeu de données (jeu de test : chaque moteur coupé à 
 
 ## 6. Critères de réussite
 
-Un critère est mesurable s'il a une valeur cible et une façon de la vérifier. Donnez-en trois ; la première ligne est un exemple à remplacer.
+
 
 | Critère | Mesure | Valeur cible | Comment vous le vérifierez |
 | --- | --- | --- | --- |
@@ -149,7 +166,7 @@ Répartition des responsabilités :
 
 ## 8. Travail réalisé en semaine 1
 
-Chaque membre remplit sa ligne lui-même. Le lien pointe vers ses commits ou sa pull request sur GitHub.
+
 
 | Membre | Ce que j'ai fait cette semaine | Lien vers mes commits | Temps passé (heures) |
 | --- | --- | --- | --- |
