@@ -61,12 +61,12 @@ La version minimale est le parcours complet le plus simple, de la demande de l'u
 
 | Composant | Choix prévu | Dossier ou fichier dans le dépôt |
 | --- | --- | --- |
-| Cœur : modèle, agent ou chaîne RAG |agent   |  |
-| API | FastAPI  |  |
-| Interface |Streamlit  |  |
-| Données et stockage |  SQlite|  |
-| Tests |  données de test |  |
-| Services externes et clés nécessaires |  |  |
+| Cœur : modèle, agent ou chaîne RAG | agent  |
+| API | FastAPI (Pydantic, Swagger) : `/health`, `/orders`, `/validate`, `/predict` ; clé d'API | à compléter |
+| Interface | Streamlit |  |
+| Données et stockage | C-MAPSS FD001 (Parquet), GMAO simulée SQLite, versionnement DVC, suivi MLflow | `data/sample/`, `src/agent/load_data.py`, `data.py`  |
+| Tests | pytest ; CI GitHub Actions à chaque push |  |
+| Services externes et clés nécessaires | Hugging Face pour télécharger les données . Clé d'API de l'application. | `.env.example` |
 
 Joignez un schéma d'architecture au dépôt (`docs/architecture.png`, ou un diagramme Mermaid dans le README) et indiquez son lien ici :
 
@@ -87,39 +87,38 @@ Règle du cours : uniquement des données publiques, fictives ou anonymisées.
 Décrivez le jeu de données tel qu'il est aujourd'hui, chiffres à l'appui. Chaque chiffre doit pouvoir être recalculé par un script du dépôt. Si votre projet n'utilise pas de tableau de données (agent, questions sur des documents), décrivez de la même façon votre corpus de documents ou votre jeu de cas d'évaluation.
 
 Vue d'ensemble :
-
 | Caractéristique | Votre réponse |
 | --- | --- |
-| Ce que représente une ligne (ou un document) |  |
-| Nombre de lignes ou de documents |  |
-| Nombre de variables (colonnes) |  |
-| Période couverte et langue |  |
-| Variable cible ou réponse attendue, s'il y en a une |  |
-| Répartition de la cible : effectif par classe, ou minimum, moyenne et maximum |  |
-| Pour un corpus de textes : longueur moyenne d'un document, en mots |  |
-| Valeurs manquantes et doublons : nombre et traitement prévu |  |
-| Découpage prévu : entraînement, test, évaluation |  |
-| Script qui recalcule ces chiffres : chemin dans le dépôt |  |
-
-Dictionnaire des variables (une ligne par colonne utilisée) :
-
-| Variable | Type (texte, nombre, catégorie, date) | Signification | Exemple de valeur | Valeurs manquantes (%) |
+| Ce que représente une ligne (ou un document) | Un cycle d'un moteur : réglages, 21 capteurs et RUL à ce cycle |
+| Nombre de lignes ou de documents | 20 631 lignes (100 moteurs, de 128 à 362 cycles chacun) |
+| Nombre de variables (colonnes) | 29 colonnes (22 après retrait des 7 colonnes constantes) |
+| Période couverte et langue | Simulation sans calendrier : l'axe du temps est le numéro de cycle. Données numériques, sans langue |
+| Variable cible ou réponse attendue, s'il y en a une | `RUL` (cycles restants) ; pour la détection, étiquette « dégradé » si RUL ≤ 30 |
+| Répartition de la cible : effectif par classe, ou minimum, moyenne et maximum | à compléter avec la sortie du script (minimum, moyenne, maximum de la RUL ; effectif dégradé / normal) |
+| Pour un corpus de textes : longueur moyenne d'un document, en mots | Corpus de fiches de maintenance prévu : 5 à 10 fiches rédigées par le binôme.  |
+| Valeurs manquantes et doublons : nombre et traitement prévu | Valeurs manquantes : 0 sur 20 631 lignes. Doublons et cycles manquants : contrôlés par `check_quality` dans `data.py` .  |
+| Découpage prévu : entraînement, test, évaluation | Découpage **par moteur**, sans moteur commun entre train, val et test (assertion dans `data.py`). Proportions : à décider avec la sortie de `data.py` (test d'environ 15 moteurs). Les 50 premiers cycles de chaque moteur servent de comportement normal |
+| Script qui recalcule ces chiffres : |
+ 
+Dictionnaire des variables (extrait) :
+ 
+| Variable | Type | Signification | Exemple de valeur | Valeurs manquantes (%) |
 | --- | --- | --- | --- | --- |
-|  |  |  |  |  |
-|  |  |  |  |  |
-|  |  |  |  |  |
-|  |  |  |  |  |
-|  |  |  |  |  |
-
-Trois exemples tirés du jeu de données :
-
-| Exemple (entrée) | Réponse ou étiquette attendue | Nature de l'exemple : cas simple, cas difficile, cas limite |
+| `unit_id` | nombre (identifiant) | Numéro du moteur | à reporter depuis `data/sample/` | 0 |
+| `cycle` | nombre | Numéro du cycle de vol | à reporter | 0 |
+| `setting_1`, `setting_2` | nombre | Réglages opérationnels (`setting_3` est constant, retiré) | à reporter | 0 |
+| `T24`, `T30`, `T50`, `P30`, `Nf`, `Nc`, `Ps30`, `phi`, `BPR`, `htBleed`, `W31`, `W32`, etc. | nombre | Mesures de capteurs (températures, pressions, vitesses, débits) | à reporter | 0 |
+| `RUL` | nombre | Cycles restants avant la panne (cible) | à reporter | 0 |
+ 
+Trois exemples tirés du jeu de données (jeu de test : chaque moteur coupé à 3 moments de sa vie) :
+ 
+| Exemple (entrée) | Réponse ou étiquette attendue | Nature de l'exemple |
 | --- | --- | --- |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Moteur de test coupé à RUL réelle proche de 100 cycles | RUL ≈ 100, pas d'alerte | Cas simple |
+| Moteur de test coupé à RUL réelle proche de 50 cycles | RUL ≈ 50, non dégradé (seuil à 30), risque de fausse alarme | Cas difficile |
+| Moteur de test coupé à RUL réelle de 30 cycles (ou proche de 10) | 30 : cas à la frontière du seuil « dégradé » ; proche de 10 : alerte attendue | Cas limite |
+ 
 
-Limites connues du jeu de données (taille, déséquilibre entre classes, biais, données générées) :
 
 ## 6. Critères de réussite
 
@@ -127,29 +126,26 @@ Un critère est mesurable s'il a une valeur cible et une façon de la vérifier.
 
 | Critère | Mesure | Valeur cible | Comment vous le vérifierez |
 | --- | --- | --- | --- |
-| Exemple : réponses correctes | Part de réponses justes sur 20 questions de test | 16 sur 20 | Script `tests/evaluation.py` |
-|  |  |  |  |
-|  |  |  |  |
-|  |  |  |  |
+| Précision de la RUL | RMSE de la RUL sur val et test | Meilleure que la baseline « RUL moyenne » ; valeur chiffrée à décider après T7 (semaine 2) | Run MLflow (T7, T8) |
+| Qualité de la détection | Taux de fausses alarmes et délai moyen entre l'alerte et la panne, sur 45 cas de test | Valeurs cibles à décider après T3 (semaine 2) | Run MLflow, évaluation complète (T18) |
+| Complétude des ordres de travail | Part d'ordres complets sur 20 scénarios rédigés par l'équipe | 100 % (20 sur 20) | Tests unitaires (T9, T10) |
+ 
 
 ## 7. Répartition et planning sur 3 semaines
 
 Un livrable par semaine, repéré par un tag Git. Précisez ce que chaque livrable veut dire pour votre projet.
-
 | Semaine | Livrable attendu | Pour votre projet, concrètement | Responsable | Tag |
 | --- | --- | --- | --- | --- |
-| 1 | Cadrage, dépôt initialisé, squelette exécutable |  |  | `s1` |
-| 2 | Version minimale qui fonctionne de bout en bout |  |  | `s2` |
-| 3 | Application finale, documentation, compte rendu |  |  | `v1.0.0` |
+| 1 | Cadrage, dépôt initialisé, squelette exécutable | Dossier de lancement (livrables 1 à 4), environnement, données C-MAPSS nettoyées et découpées, prototype de détection de dérives, `/health` et GMAO SQLite (T1 à T6) | A (T1 à T3), B (T4 à T6) | `s1` |
+| 2 | Version minimale qui fonctionne de bout en bout | Random Forest RUL avec incertitude, règles de planification, ordre de travail, orchestrateur, endpoints `/orders` et `/validate` (T7 à T12) | A (T7, T8, T11), B (T9, T10, T12) | `s2` |
+| 3 | Application finale, documentation, compte rendu | `/predict`, Streamlit, Docker Compose, CI, explicabilité, évaluation, courant simulé (T13 à T19), puis documentation, rapport, tests de bout en bout, soutenance et démo (T20 à T24) | A et B | `v1.0.0` |
 
 Répartition des responsabilités :
 
 | Membre | Responsabilités sur les 3 semaines | Remplaçant en cas d'absence |
 | --- | --- | --- |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Essammouni (A) | Données, modèles (Isolation Forest, Random Forest, incertitude), orchestrateur, explicabilité, évaluation, documentation, rapport (19 jours) | Hbibou |
+| Hbibou (B) | API, GMAO SQLite, planification, ordre de travail, tableau de bord, Docker, CI, tests de bout en bout, soutenance (19 jours) | Essammouni |
 
 ## 8. Travail réalisé en semaine 1
 
@@ -157,8 +153,8 @@ Chaque membre remplit sa ligne lui-même. Le lien pointe vers ses commits ou sa 
 
 | Membre | Ce que j'ai fait cette semaine | Lien vers mes commits | Temps passé (heures) |
 | --- | --- | --- | --- |
-|  |  |  |  |
-|  |  |  |  |
+| Essammouni | dataset +pipeline |  |  |
+| Hbibou |  Maquette +descriptif|  |  |
 |  |  |  |  |
 |  |  |  |  |
 
