@@ -18,19 +18,19 @@ Rappel du barème du projet, sur 100 : application finale 20, dépôt GitHub 20,
 
 | Élément | Votre réponse |
 | --- | --- |
-| Nom du groupe |  |
-| Titre du projet |  |
-| Sujet : numéro du catalogue, ou « hors catalogue » |  |
-| Adresse du dépôt GitHub |  |
-| Enseignant ajouté au dépôt (oui ou non) |  |
-| Date de remise de la fiche |  |
+| Nom du groupe | Hbibou_Essammouni |
+| Titre du projet | Agent de maintenance prédictive |
+| Sujet : numéro du catalogue, ou « hors catalogue » | 21 |
+| Adresse du dépôt GitHub | https://github.com/AyaHbibou/Hbibou_Essammouni_G3_21 |
+| Enseignant ajouté au dépôt (oui ou non) | oui |
+| Date de remise de la fiche | 16-11-2026 |
 
 Membres du groupe (2 à 4 lignes) :
 
 | Nom et prénom | Compte GitHub | Rôle principal dans le projet |
 | --- | --- | --- |
-|  |  |  |
-|  |  |  |
+| Hbibou Aya|  https://github.com/AyaHbibou| Descriptif+Maquette |
+| Essammouni Khaoula| https://github.com/essammounikhaoula-source | Dataset+Pipeline |
 |  |  |  |
 |  |  |  |
 
@@ -38,11 +38,11 @@ Membres du groupe (2 à 4 lignes) :
 
 | Question | Votre réponse |
 | --- | --- |
-| Besoin en une phrase |  |
-| Utilisateur final : qui se sert de l'application |  |
-| Ce que fait l'application, vu par l'utilisateur (3 lignes au plus) |  |
-| Approche retenue (règles, apprentissage, RAG, agent) et raison du choix |  |
-| Conséquence d'une erreur de l'application, et validation humaine prévue |  |
+| Besoin en une phrase |détecter les dérives des capteurs et estimer la durée de vie restante et puis proposer un ordre de travail  à valider  |
+| Utilisateur final : qui se sert de l'application | Technicien|
+| Ce que fait l'application, vu par l'utilisateur (3 lignes au plus) |l'agent reçoit les mesures des capteurs,nettoie les séries temporelles et compare avec au profil normal , estimation du temps de vie restant avec explication du diagnostic et préparation du l'ordre de travail dont  le technicien de maintenance le  valide ou  le refuse   |
+| Approche retenue (règles, apprentissage, RAG, agent) et raison du choix | agent, pour rédiger  des diagnostic qui aide à la prise de décision  |
+| Conséquence d'une erreur de l'application, et validation humaine prévue | le responsable du maintenance suit l état des équipements  |
 | Sujet hors catalogue : projet du catalogue auquel il est comparable |  |
 
 ## 3. Périmètre
@@ -51,9 +51,9 @@ La version minimale est le parcours complet le plus simple, de la demande de l'u
 
 | Rubrique | Votre réponse |
 | --- | --- |
-| Version minimale : le parcours que vous montrerez en semaine 2 |  |
-| Fonction 1, indispensable |  |
-| Fonction 2, indispensable |  |
+| Version minimale : le parcours que vous montrerez en semaine 2 |Prétraitement des données et implémentation de l'agent   |
+| Fonction 1, indispensable | Préparation des données |
+| Fonction 2, indispensable | Implémentation de l'agent |
 | Fonction 3, si le temps le permet |  |
 | Hors périmètre : ce que vous ne ferez pas |  |
 
@@ -61,11 +61,11 @@ La version minimale est le parcours complet le plus simple, de la demande de l'u
 
 | Composant | Choix prévu | Dossier ou fichier dans le dépôt |
 | --- | --- | --- |
-| Cœur : modèle, agent ou chaîne RAG |  |  |
-| API |  |  |
-| Interface |  |  |
-| Données et stockage |  |  |
-| Tests |  |  |
+| Cœur : modèle, agent ou chaîne RAG |agent   |  |
+| API | FastAPI  |  |
+| Interface |Streamlit  |  |
+| Données et stockage |  SQlite|  |
+| Tests |  données de test |  |
 | Services externes et clés nécessaires |  |  |
 
 Joignez un schéma d'architecture au dépôt (`docs/architecture.png`, ou un diagramme Mermaid dans le README) et indiquez son lien ici :
